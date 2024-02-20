@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from chain import ChatRequest, answer_chain
 
-client = Client()
+# client = Client()
 
 app = FastAPI()
 app.add_middleware(

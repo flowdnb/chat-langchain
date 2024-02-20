@@ -28,10 +28,11 @@ import { Source } from "./SourceBubble";
 import { apiBaseUrl } from "../utils/constants";
 
 const MODEL_TYPES = [
-  "openai_gpt_3_5_turbo",
-  "anthropic_claude_2_1",
-  "google_gemini_pro",
-  "fireworks_mixtral",
+  // "openai_gpt_3_5_turbo",
+  // "anthropic_claude_2_1",
+  // "google_gemini_pro",
+  // "fireworks_mixtral",
+  "llama2"
 ];
 
 const defaultLlmValue =
@@ -253,12 +254,13 @@ export function ChatWindow(props: { conversationId: string }) {
                 }}
                 width={"240px"}
               >
-                <option value="openai_gpt_3_5_turbo">GPT-3.5-Turbo</option>
+                <option value="llama2">llama2</option>
+                {/* <option value="openai_gpt_3_5_turbo">GPT-3.5-Turbo</option>
                 <option value="anthropic_claude_2_1">Claude-2.1</option>
                 <option value="google_gemini_pro">Google Gemini Pro</option>
                 <option value="fireworks_mixtral">
                   Mixtral (via Fireworks.ai)
-                </option>
+                </option> */}
               </Select>
             )}
           </div>
@@ -289,7 +291,7 @@ export function ChatWindow(props: { conversationId: string }) {
           value={input}
           maxRows={5}
           marginRight={"56px"}
-          placeholder="What does RunnablePassthrough.assign() do?"
+          placeholder="Ask something which is in the ITCF Wiki"
           textColor={"white"}
           borderColor={"rgb(58, 58, 61)"}
           onChange={(e) => setInput(e.target.value)}

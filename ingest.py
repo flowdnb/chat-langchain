@@ -4,24 +4,30 @@ import os
 import re
 from parser import langchain_docs_extractor
 
-import weaviate
+# import weaviate
+from langchain_community.vectorstores import Qdrant
 from bs4 import BeautifulSoup, SoupStrainer
-from langchain.document_loaders import RecursiveUrlLoader, SitemapLoader
+from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader
 from langchain.indexes import SQLRecordManager, index
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
-from langchain.vectorstores.weaviate import Weaviate
-from langchain_core.embeddings import Embeddings
-from langchain_openai import OpenAIEmbeddings
+# from langchain.vectorstores.weaviate import Weaviate
+from langchain_community.vectorstores import FAISS
+# from langchain_core.embeddings import Embeddings
+from langchain_community.embeddings import OllamaEmbeddings
+# from langchain_openai import OpenAIEmbeddings
+# from constants import WEAVIATE_DOCS_INDEX_NAME
 
-from constants import WEAVIATE_DOCS_INDEX_NAME
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_embeddings_model() -> Embeddings:
-    return OpenAIEmbeddings(model="text-embedding-3-small", chunk_size=200)
+# def get_embeddings_model() -> Embeddings:
+    # return OpenAIEmbeddings(model="text-embedding-3-small", chunk_size=200)
+
+def get_embeddings_model() -> OllamaEmbeddings:
+    return OllamaEmbeddings()
 
 
 def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
@@ -37,36 +43,36 @@ def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
     }
 
 
-def load_langchain_docs():
-    return SitemapLoader(
-        "https://python.langchain.com/sitemap.xml",
-        filter_urls=["https://python.langchain.com/"],
-        parsing_function=langchain_docs_extractor,
-        default_parser="lxml",
-        bs_kwargs={
-            "parse_only": SoupStrainer(
-                name=("article", "title", "html", "lang", "content")
-            ),
-        },
-        meta_function=metadata_extractor,
-    ).load()
+# def load_langchain_docs():
+#     return SitemapLoader(
+#         "https://python.langchain.com/sitemap.xml",
+#         filter_urls=["https://python.langchain.com/"],
+#         parsing_function=langchain_docs_extractor,
+#         default_parser="lxml",
+#         bs_kwargs={
+#             "parse_only": SoupStrainer(
+#                 name=("article", "title", "html", "lang", "content")
+#             ),
+#         },
+#         meta_function=metadata_extractor,
+#     ).load()
 
 
-def load_langsmith_docs():
-    return RecursiveUrlLoader(
-        url="https://docs.smith.langchain.com/",
-        max_depth=8,
-        extractor=simple_extractor,
-        prevent_outside=True,
-        use_async=True,
-        timeout=600,
-        # Drop trailing / to avoid duplicate pages.
-        link_regex=(
-            f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
-            r"(?:[\#'\"]|\/[\#'\"])"
-        ),
-        check_response_status=True,
-    ).load()
+# def load_langsmith_docs():
+#     return RecursiveUrlLoader(
+#         url="https://docs.smith.langchain.com/",
+#         max_depth=8,
+#         extractor=simple_extractor,
+#         prevent_outside=True,
+#         use_async=True,
+#         timeout=600,
+#         # Drop trailing / to avoid duplicate pages.
+#         link_regex=(
+#             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
+#             r"(?:[\#'\"]|\/[\#'\"])"
+#         ),
+#         check_response_status=True,
+#     ).load()
 
 
 def simple_extractor(html: str) -> str:
@@ -74,10 +80,10 @@ def simple_extractor(html: str) -> str:
     return re.sub(r"\n\n+", "\n\n", soup.text).strip()
 
 
-def load_api_docs():
+def load_url_docs():
     return RecursiveUrlLoader(
-        url="https://api.python.langchain.com/en/latest/",
-        max_depth=8,
+        url="https://webcms47.inet.dkfz-heidelberg.de/",
+        max_depth=1,
         extractor=simple_extractor,
         prevent_outside=True,
         use_async=True,
@@ -85,50 +91,49 @@ def load_api_docs():
         # Drop trailing / to avoid duplicate pages.
         link_regex=(
             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
-            r"(?:[\#'\"]|\/[\#'\"])"
+            # r"(?:[\#'\"]|\/[\#'\"])"
+            r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions\/|\/attachments\/|\/users\/|\/uploads\/|\+496221422376|\+496221422323)"
         ),
         check_response_status=True,
-        exclude_dirs=(
-            "https://api.python.langchain.com/en/latest/_sources",
-            "https://api.python.langchain.com/en/latest/_modules",
-        ),
     ).load()
 
 
 def ingest_docs():
-    WEAVIATE_URL = os.environ["WEAVIATE_URL"]
-    WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
-    RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
+    # WEAVIATE_URL = os.environ["WEAVIATE_URL"]
+    # WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
+    # RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
-    client = weaviate.Client(
-        url=WEAVIATE_URL,
-        auth_client_secret=weaviate.AuthApiKey(api_key=WEAVIATE_API_KEY),
-    )
-    embedding = get_embeddings_model()
-    vectorstore = Weaviate(
-        client=client,
-        index_name=WEAVIATE_DOCS_INDEX_NAME,
-        text_key="text",
-        embedding=embedding,
-        by_text=False,
-        attributes=["source", "title"],
-    )
+    # client = weaviate.Client(
+    #     url=WEAVIATE_URL,
+    #     auth_client_secret=weaviate.AuthApiKey(api_key=WEAVIATE_API_KEY),
+    # )
+    embeddings = get_embeddings_model()
+    # vectorstore = Weaviate(
+    #     client=client,
+    #     index_name=WEAVIATE_DOCS_INDEX_NAME,
+    #     text_key="text",
+    #     embedding=embedding,
+    #     by_text=False,
+    #     attributes=["source", "title"],
+    # )
 
-    record_manager = SQLRecordManager(
-        f"weaviate/{WEAVIATE_DOCS_INDEX_NAME}", db_url=RECORD_MANAGER_DB_URL
-    )
-    record_manager.create_schema()
+    # record_manager = SQLRecordManager(
+    #     f"weaviate/{WEAVIATE_DOCS_INDEX_NAME}", db_url=RECORD_MANAGER_DB_URL
+    # )
+    # record_manager.create_schema()
 
-    docs_from_documentation = load_langchain_docs()
-    logger.info(f"Loaded {len(docs_from_documentation)} docs from documentation")
-    docs_from_api = load_api_docs()
-    logger.info(f"Loaded {len(docs_from_api)} docs from API")
-    docs_from_langsmith = load_langsmith_docs()
-    logger.info(f"Loaded {len(docs_from_langsmith)} docs from Langsmith")
+    # docs_from_documentation = load_langchain_docs()
+    # logger.info(f"Loaded {len(docs_from_documentation)} docs from documentation")
+    docs_from_url = load_url_docs()
+    logger.info(f"Loaded {len(docs_from_url)} docs from API")
+    # docs_from_langsmith = load_langsmith_docs()
+    # logger.info(f"Loaded {len(docs_from_langsmith)} docs from Langsmith")
 
     docs_transformed = text_splitter.split_documents(
-        docs_from_documentation + docs_from_api + docs_from_langsmith
+        # docs_from_documentatio‚n +
+        docs_from_url
+        # + docs_from_langsmith
     )
     docs_transformed = [doc for doc in docs_transformed if len(doc.page_content) > 10]
 
@@ -141,20 +146,28 @@ def ingest_docs():
         if "title" not in doc.metadata:
             doc.metadata["title"] = ""
 
-    indexing_stats = index(
+    # vector = FAISS.from_documents(docs_transformed, embedding)
+    qdrant = Qdrant.from_documents(
         docs_transformed,
-        record_manager,
-        vectorstore,
-        cleanup="full",
-        source_id_key="source",
-        force_update=(os.environ.get("FORCE_UPDATE") or "false").lower() == "true",
+        embeddings,
+        path="/tmp/local_qdrant",
+        collection_name="my_documents",
     )
 
-    logger.info(f"Indexing stats: {indexing_stats}")
-    num_vecs = client.query.aggregate(WEAVIATE_DOCS_INDEX_NAME).with_meta_count().do()
-    logger.info(
-        f"LangChain now has this many vectors: {num_vecs}",
-    )
+    # indexing_stats = index(
+    #     docs_transformed,
+    #     record_manager,
+    #     vectorstore,
+    #     cleanup="full",
+    #     source_id_key="source",
+    #     force_update=(os.environ.get("FORCE_UPDATE") or "false").lower() == "true",
+    # )
+
+    # logger.info(f"Indexing stats: {indexing_stats}")
+    # num_vecs = client.query.aggregate(WEAVIATE_DOCS_INDEX_NAME).with_meta_count().do()
+    # logger.info(
+    #     f"LangChain now has this many vectors: {num_vecs}",
+    # )
 
 
 if __name__ == "__main__":
