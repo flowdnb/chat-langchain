@@ -220,7 +220,7 @@ export function ChatWindow(props: { conversationId: string }) {
           mb={1}
           color={"white"}
         >
-          Chat LangChain 🦜🔗
+          🧑🏼‍💻🔧 AITServiceBot 🤖📚
         </Heading>
         {messages.length > 0 ? (
           <Heading fontSize="md" fontWeight={"normal"} mb={1} color={"white"}>
@@ -234,8 +234,8 @@ export function ChatWindow(props: { conversationId: string }) {
             marginTop={"10px"}
             textAlign={"center"}
           >
-            Ask me anything about LangChain&apos;s{" "}
-            <Link href="https://python.langchain.com/" color={"blue.200"}>
+            Ask me anything from the ITCFWiki&apos;s{" "}
+            <Link href="https://bookstack.dkfz.de/" color={"blue.200"}>
               Python documentation!
             </Link>
           </Heading>
@@ -291,7 +291,7 @@ export function ChatWindow(props: { conversationId: string }) {
           value={input}
           maxRows={5}
           marginRight={"56px"}
-          placeholder="Ask something which is in the ITCF Wiki"
+          placeholder="Ask something from the ITCFWiki"
           textColor={"white"}
           borderColor={"rgb(58, 58, 61)"}
           onChange={(e) => setInput(e.target.value)}
