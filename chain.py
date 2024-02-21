@@ -242,8 +242,6 @@ def create_chain(
 #         google_api_key=os.environ.get("GOOGLE_API_KEY", "not_provided"),
 #     ),
 # )
-llm = Ollama(model="mistral:instruct")
-
 llm = Ollama(
     model="llama2",
     temperature=0,
