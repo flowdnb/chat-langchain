@@ -7,7 +7,7 @@ import langsmith
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
-from langsmith import Client
+# from langsmith import Client
 from pydantic import BaseModel
 
 from chain import ChatRequest, answer_chain
@@ -45,14 +45,15 @@ class SendFeedbackBody(BaseModel):
 
 @app.post("/feedback")
 async def send_feedback(body: SendFeedbackBody):
-    client.create_feedback(
-        body.run_id,
-        body.key,
-        score=body.score,
-        comment=body.comment,
-        feedback_id=body.feedback_id,
-    )
-    return {"result": "posted feedback successfully", "code": 200}
+    # client.create_feedback(
+    #     body.run_id,
+    #     body.key,
+    #     score=body.score,
+    #     comment=body.comment,
+    #     feedback_id=body.feedback_id,
+    # )
+    # return {"result": "posted feedback successfully", "code": 200}
+    return {"result": "posting feedback not yet implemented", "code": 200}
 
 
 class UpdateFeedbackBody(BaseModel):
@@ -69,12 +70,13 @@ async def update_feedback(body: UpdateFeedbackBody):
             "result": "No feedback ID provided",
             "code": 400,
         }
-    client.update_feedback(
-        feedback_id,
-        score=body.score,
-        comment=body.comment,
-    )
-    return {"result": "patched feedback successfully", "code": 200}
+    # client.update_feedback(
+    #     feedback_id,
+    #     score=body.score,
+    #     comment=body.comment,
+    # )
+    # return {"result": "patched feedback successfully", "code": 200}
+    return {"result": "patching feedback not yet implemented", "code": 200}
 
 
 # TODO: Update when async API is available
@@ -83,16 +85,17 @@ async def _arun(func, *args, **kwargs):
 
 
 async def aget_trace_url(run_id: str) -> str:
-    for i in range(5):
-        try:
-            await _arun(client.read_run, run_id)
-            break
-        except langsmith.utils.LangSmithError:
-            await asyncio.sleep(1**i)
+    # for i in range(5):
+    #     try:
+    #         await _arun(client.read_run, run_id)
+    #         break
+    #     except langsmith.utils.LangSmithError:
+    #         await asyncio.sleep(1**i)
 
-    if await _arun(client.run_is_shared, run_id):
-        return await _arun(client.read_run_shared_link, run_id)
-    return await _arun(client.share_run, run_id)
+    # if await _arun(client.run_is_shared, run_id):
+    #     return await _arun(client.read_run_shared_link, run_id)
+    # return await _arun(client.share_run, run_id)
+    return None
 
 
 class GetTraceBody(BaseModel):
