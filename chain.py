@@ -31,7 +31,7 @@ from langchain_core.runnables import (
 )
 from langchain_google_genai import ChatGoogleGenerativeAI
 # from langchain_openai import ChatOpenAI
-from langsmith import Client
+# from langsmith import Client
 
 # from constants import WEAVIATE_DOCS_INDEX_NAME
 from ingest import get_embeddings_model
