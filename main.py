@@ -3,7 +3,7 @@ import asyncio
 from typing import Optional, Union
 from uuid import UUID
 
-import langsmith
+# import langsmith
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
