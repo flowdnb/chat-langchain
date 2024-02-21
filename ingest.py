@@ -83,7 +83,7 @@ def simple_extractor(html: str) -> str:
 def load_url_docs():
     return RecursiveUrlLoader(
         url="https://webcms47.inet.dkfz-heidelberg.de/",
-        max_depth=1,
+        max_depth=7,
         extractor=simple_extractor,
         prevent_outside=True,
         use_async=True,

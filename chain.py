@@ -242,7 +242,21 @@ def create_chain(
 #         google_api_key=os.environ.get("GOOGLE_API_KEY", "not_provided"),
 #     ),
 # )
-llm = Ollama(model="llama2")
+llm = Ollama(model="mistral:instruct")
+
+llm = Ollama(
+    model="llama2",
+    temperature=0,
+    ).configurable_alternatives(
+        # This gives this field an id
+        # When configuring the end runnable, we can then use this id to configure this field
+        ConfigurableField(id="llm"),
+        default_key="llama2",
+        mistral_instruct=Ollama(
+            model="mistral:instruct",
+            temperature=0,
+        ),
+)
 
 retriever = get_retriever()
 answer_chain = create_chain(
