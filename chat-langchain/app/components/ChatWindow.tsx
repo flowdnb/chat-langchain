@@ -234,10 +234,11 @@ export function ChatWindow(props: { conversationId: string }) {
             marginTop={"10px"}
             textAlign={"center"}
           >
-            Ask me anything from the ITCFWiki&apos;s{" "}
+            Ask me anything from the {" "}
             <Link href="https://bookstack.dkfz.de/" color={"blue.200"}>
-              Python documentation!
+            ITCFWiki
             </Link>
+            !
           </Heading>
         )}
         <div className="text-white flex flex-wrap items-center mt-4">
@@ -323,7 +324,7 @@ export function ChatWindow(props: { conversationId: string }) {
       {messages.length === 0 ? (
         <footer className="flex justify-center absolute bottom-8">
           <a
-            href="https://github.com/langchain-ai/chat-langchain"
+            href="https://github.com/flowdnb/chat-langchain/tree/aitservicebot"
             target="_blank"
             className="text-white flex items-center"
           >

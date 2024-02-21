@@ -31,7 +31,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              What is the ITCF?
+              What is the IT Core Facility (ITCF)?
             </Heading>
           </CardHeader>
         </Card>
@@ -52,7 +52,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              What does the ITCF do?
+              What do you know about the DPF at DKFZ?
             </Heading>
           </CardHeader>
         </Card>
@@ -74,7 +74,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              Explain the GINA Portal.
+              What is ProCall about?
             </Heading>
           </CardHeader>
         </Card>
@@ -95,7 +95,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              How do I set up Rocket.Chat?
+              What is included in the ITCFWiki?
             </Heading>
           </CardHeader>
         </Card>

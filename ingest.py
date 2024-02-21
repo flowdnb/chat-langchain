@@ -92,7 +92,7 @@ def load_url_docs():
         link_regex=(
             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
             # r"(?:[\#'\"]|\/[\#'\"])"
-            r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions\/|\/attachments\/|\/users\/|\/uploads\/|\+496221422376|\+496221422323)"
+            r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions\/|\/attachments\/|\/users\/|\/uploads\/|\/dist\/|\+496221422376|\+496221422323)"
         ),
         check_response_status=True,
     ).load()
