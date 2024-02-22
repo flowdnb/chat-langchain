@@ -83,7 +83,7 @@ Standalone Question:"""
 
 embeddings = OllamaEmbeddings()
 client = qdrant_client.QdrantClient(
-    path="/tmp/local_qdrant"
+    path="./local_qdrant"
 )
 doc_store = Qdrant(
     client=client,
