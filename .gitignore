@@ -153,3 +153,4 @@ node_modules/
 !.yarn/versions
 
 local_qdrant/
+local_qdrant.tgz
