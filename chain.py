@@ -9,7 +9,7 @@ from langchain_community.embeddings import OllamaEmbeddings
 # import weaviate
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from langchain_community.chat_models import ChatAnthropic, ChatFireworks
+# from langchain_community.chat_models import ChatAnthropic, ChatFireworks
 # from langchain_community.vectorstores import Weaviate
 from langchain_core.documents import Document
 from langchain_core.language_models import BaseLanguageModel
@@ -29,7 +29,7 @@ from langchain_core.runnables import (
     RunnableLambda,
     RunnableMap,
 )
-from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_google_genai import ChatGoogleGenerativeAI
 # from langchain_openai import ChatOpenAI
 # from langsmith import Client
 
@@ -243,13 +243,13 @@ def create_chain(
 #     ),
 # )
 llm = Ollama(
-    model="llama2:7b",
+    model="llama2",
     temperature=0,
     ).configurable_alternatives(
         # This gives this field an id
         # When configuring the end runnable, we can then use this id to configure this field
         ConfigurableField(id="llm"),
-        default_key="llama2_7b",
+        default_key="llama2",
         llama2_13b=Ollama(
             model="llama2:13b",
             temperature=0,
