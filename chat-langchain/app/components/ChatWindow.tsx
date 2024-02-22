@@ -255,11 +255,11 @@ export function ChatWindow(props: { conversationId: string }) {
                 }}
                 width={"240px"}
               >
-                <option value="llama2_7b">llama2:7b</option>
-                <option value="llama2_13b">llama2:13b</option>
+                <option value="llama2_7b">Llama-2-7b</option>
+                <option value="llama2_13b">Llama-2-13b</option>
                 <option value="mistral_7binstruct">Mistral-7B-Instruct-v0.2</option>
-                <option value="orca_mini7b">Orca Mini 7b</option>
-                <option value="orca_mini13b">Orca Mini 13b</option>
+                <option value="orca_mini7b">Orca-Mini-7b</option>
+                <option value="orca_mini13b">Orca-Mini-13b</option>
               </Select>
             )}
           </div>
