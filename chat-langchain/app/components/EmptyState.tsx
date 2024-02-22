@@ -31,7 +31,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              What is the IT Core Facility (ITCF)?
+              What is the IT Core Facility (ITCF) at DKFZ??
             </Heading>
           </CardHeader>
         </Card>
@@ -52,7 +52,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              What do you know about the DPF at DKFZ?
+              Please explain the Rahmendatenschutzkonzept of ITCF at DKFZ.
             </Heading>
           </CardHeader>
         </Card>
@@ -74,7 +74,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              What is ProCall about?
+              How to get network access at DKFZ?
             </Heading>
           </CardHeader>
         </Card>
@@ -95,7 +95,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              What is included in the ITCFWiki?
+              Tell me some facts about the “Click&Dial” service provided by ITCF at DKFZ?
             </Heading>
           </CardHeader>
         </Card>
