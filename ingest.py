@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
     # return OpenAIEmbeddings(model="text-embedding-3-small", chunk_size=200)
 
 def get_embeddings_model() -> OllamaEmbeddings:
-    # return OllamaEmbeddings(model="nomic-embed-text") # ValueError: shapes (3357,768) and (4096,) not aligned: 768 (dim 1) != 4096 (dim 0)
-    return OllamaEmbeddings(model="llama2")
+    return OllamaEmbeddings(model="nomic-embed-text") # ValueError: shapes (3357,768) and (4096,) not aligned: 768 (dim 1) != 4096 (dim 0)
+    # return OllamaEmbeddings(model="llama2")
 
 
 def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
@@ -42,15 +42,17 @@ def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
 
 def load_sitemap_docs():
     return SitemapLoader(
-        "https://intranet.dkfz.de/en/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
-        filter_urls=["https://intranet.dkfz.de/"],
+        # "https://intranet.dkfz.de/en/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
+        "https://www.dkfz.de/de/sitemap.xml",
+        # filter_urls=["https://intranet.dkfz.de/"],
+        filter_urls=["https://www.dkfz.de/"],
         parsing_function=langchain_docs_extractor,
         default_parser="lxml",
-        # bs_kwargs={
-        #     "parse_only": SoupStrainer(
-        #         name=("article", "title", "html", "lang", "content")
-        #     ),
-        # },
+        bs_kwargs={
+            "parse_only": SoupStrainer(
+                name=("article", "title", "html", "lang", "content")
+            ),
+        },
         meta_function=metadata_extractor,
     ).load()
 
@@ -114,7 +116,8 @@ def ingest_docs():
         docs_from_sitemap
         # +
         # docs_from_recursiveurl
-        # + docs_from_langsmith
+        # +
+        # docs_from_langsmith
     )
     docs_transformed = [doc for doc in docs_transformed if len(doc.page_content) > 10]
 

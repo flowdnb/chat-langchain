@@ -37,8 +37,8 @@ from langchain_core.runnables import (
 from ingest import get_embeddings_model
 
 RESPONSE_TEMPLATE = """\
-You are an expert programmer and problem-solver, tasked with answering any question \
-about Langchain.
+You are a customer service employee at the information desk, tasked with answering any question \
+about DKFZ.
 
 Generate a comprehensive and informative answer of 80 words or less for the \
 given question based solely on the provided search results (URL and content). You must \
@@ -56,7 +56,7 @@ rather than putting them all at the end.
 If there is nothing in the context relevant to the question at hand, just say "Hmm, \
 I'm not sure." Don't try to make up an answer.
 
-Anything between the following `context`  html blocks is retrieved from a knowledge \
+Anything between the following `context` html blocks is retrieved from a knowledge \
 bank, not part of the conversation with the user. 
 
 <context>
@@ -82,14 +82,6 @@ Standalone Question:"""
 # client = Client()
 
 embeddings = OllamaEmbeddings()
-client = qdrant_client.QdrantClient(
-    path="./local_qdrant"
-)
-doc_store = Qdrant(
-    client=client,
-    collection_name="my_documents", 
-    embeddings=embeddings,
-)
 
 app = FastAPI()
 app.add_middleware(
@@ -125,7 +117,15 @@ def get_retriever() -> BaseRetriever:
     #     attributes=["source", "title"],
     # )
     # return weaviate_client.as_retriever(search_kwargs=dict(k=6))
-    return doc_store.as_retriever()
+    client = qdrant_client.QdrantClient(
+        path="./local_qdrant"
+    )
+    doc_store = Qdrant(
+        client=client,
+        collection_name="my_documents", 
+        embeddings=embeddings,
+    )
+    return doc_store.as_retriever(search_type="mmr")
 
 
 def create_retriever_chain(
