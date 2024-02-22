@@ -23,7 +23,8 @@ logger = logging.getLogger(__name__)
     # return OpenAIEmbeddings(model="text-embedding-3-small", chunk_size=200)
 
 def get_embeddings_model() -> OllamaEmbeddings:
-    return OllamaEmbeddings(model="nomic-embed-text")
+    # return OllamaEmbeddings(model="nomic-embed-text") # ValueError: shapes (3357,768) and (4096,) not aligned: 768 (dim 1) != 4096 (dim 0)
+    return OllamaEmbeddings(model="llama2")
 
 
 def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
