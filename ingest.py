@@ -4,19 +4,15 @@ import os
 import re
 from parser import langchain_docs_extractor
 
-# import weaviate
 from langchain_community.vectorstores import Qdrant
 from bs4 import BeautifulSoup, SoupStrainer
 from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader
 from langchain.indexes import SQLRecordManager, index
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
-# from langchain.vectorstores.weaviate import Weaviate
 from langchain_community.vectorstores import FAISS
 # from langchain_core.embeddings import Embeddings
 from langchain_community.embeddings import OllamaEmbeddings
-# from langchain_openai import OpenAIEmbeddings
-# from constants import WEAVIATE_DOCS_INDEX_NAME
 
 
 logging.basicConfig(level=logging.INFO)
@@ -27,7 +23,7 @@ logger = logging.getLogger(__name__)
     # return OpenAIEmbeddings(model="text-embedding-3-small", chunk_size=200)
 
 def get_embeddings_model() -> OllamaEmbeddings:
-    return OllamaEmbeddings()
+    return OllamaEmbeddings(model="nomic-embed-text")
 
 
 def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
@@ -43,36 +39,19 @@ def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
     }
 
 
-# def load_langchain_docs():
-#     return SitemapLoader(
-#         "https://python.langchain.com/sitemap.xml",
-#         filter_urls=["https://python.langchain.com/"],
-#         parsing_function=langchain_docs_extractor,
-#         default_parser="lxml",
-#         bs_kwargs={
-#             "parse_only": SoupStrainer(
-#                 name=("article", "title", "html", "lang", "content")
-#             ),
-#         },
-#         meta_function=metadata_extractor,
-#     ).load()
-
-
-# def load_langsmith_docs():
-#     return RecursiveUrlLoader(
-#         url="https://docs.smith.langchain.com/",
-#         max_depth=8,
-#         extractor=simple_extractor,
-#         prevent_outside=True,
-#         use_async=True,
-#         timeout=600,
-#         # Drop trailing / to avoid duplicate pages.
-#         link_regex=(
-#             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
-#             r"(?:[\#'\"]|\/[\#'\"])"
-#         ),
-#         check_response_status=True,
-#     ).load()
+def load_sitemap_docs():
+    return SitemapLoader(
+        "https://intranet.dkfz.de/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
+        filter_urls=["https://intranet.dkfz.de/"],
+        parsing_function=langchain_docs_extractor,
+        default_parser="lxml",
+        bs_kwargs={
+            "parse_only": SoupStrainer(
+                name=("article", "title", "html", "lang", "content")
+            ),
+        },
+        meta_function=metadata_extractor,
+    ).load()
 
 
 def simple_extractor(html: str) -> str:
@@ -80,7 +59,7 @@ def simple_extractor(html: str) -> str:
     return re.sub(r"\n\n+", "\n\n", soup.text).strip()
 
 
-def load_url_docs():
+def load_recursiveurl_docs():
     return RecursiveUrlLoader(
         url="https://webcms47.inet.dkfz-heidelberg.de/",
         max_depth=7,
@@ -123,16 +102,16 @@ def ingest_docs():
     # )
     # record_manager.create_schema()
 
-    # docs_from_documentation = load_langchain_docs()
-    # logger.info(f"Loaded {len(docs_from_documentation)} docs from documentation")
-    docs_from_url = load_url_docs()
-    logger.info(f"Loaded {len(docs_from_url)} docs from API")
+    docs_from_sitemap = load_sitemap_docs()
+    logger.info(f"Loaded {len(docs_from_sitemap)} docs from sitemap")
+    docs_from_recursiveurl = load_recursiveurl_docs()
+    logger.info(f"Loaded {len(docs_from_recursiveurl)} docs from recursiveurl")
     # docs_from_langsmith = load_langsmith_docs()
     # logger.info(f"Loaded {len(docs_from_langsmith)} docs from Langsmith")
 
     docs_transformed = text_splitter.split_documents(
-        # docs_from_documentatio‚n +
-        docs_from_url
+        docs_from_sitemap +
+        docs_from_recursiveurl
         # + docs_from_langsmith
     )
     docs_transformed = [doc for doc in docs_transformed if len(doc.page_content) > 10]
@@ -150,7 +129,8 @@ def ingest_docs():
     qdrant = Qdrant.from_documents(
         docs_transformed,
         embeddings,
-        path="/tmp/local_qdrant",
+        force_recreate=True,
+        path="./local_qdrant",
         collection_name="my_documents",
     )
 
