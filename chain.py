@@ -243,15 +243,27 @@ def create_chain(
 #     ),
 # )
 llm = Ollama(
-    model="llama2",
+    model="llama2:7b",
     temperature=0,
     ).configurable_alternatives(
         # This gives this field an id
         # When configuring the end runnable, we can then use this id to configure this field
         ConfigurableField(id="llm"),
-        default_key="llama2",
-        mistral_instruct=Ollama(
-            model="mistral:instruct",
+        default_key="llama2_7b",
+        llama2_13b=Ollama(
+            model="llama2:13b",
+            temperature=0,
+        ),
+        mistral_7binstruct=Ollama(
+            model="mistral:7b-instruct",
+            temperature=0,
+        ),
+        orca_mini7b=Ollama(
+            model="orca-mini:7b",
+            temperature=0,
+        ),
+        orca_mini13b=Ollama(
+            model="orca-mini:13b",
             temperature=0,
         ),
 )
