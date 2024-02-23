@@ -152,8 +152,6 @@ node_modules/
 !.yarn/sdks
 !.yarn/versions
 
-local_qdrant/
-local_qdrant.tgz
 local_cache/
-
 faiss_index/
+faiss_index.tgz
