@@ -2,15 +2,11 @@ import os
 from operator import itemgetter
 from typing import Dict, List, Optional, Sequence
 
-from langchain_community.vectorstores import Qdrant
-import qdrant_client
+from langchain_community.vectorstores import FAISS
 from langchain_community.llms import Ollama
 from langchain_community.embeddings import OllamaEmbeddings
-# import weaviate
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from langchain_community.chat_models import ChatAnthropic, ChatFireworks
-# from langchain_community.vectorstores import Weaviate
 from langchain_core.documents import Document
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.messages import AIMessage, HumanMessage
@@ -29,11 +25,6 @@ from langchain_core.runnables import (
     RunnableLambda,
     RunnableMap,
 )
-# from langchain_google_genai import ChatGoogleGenerativeAI
-# from langchain_openai import ChatOpenAI
-# from langsmith import Client
-
-# from constants import WEAVIATE_DOCS_INDEX_NAME
 from ingest import get_embeddings_model
 
 RESPONSE_TEMPLATE = """\
@@ -94,38 +85,14 @@ app.add_middleware(
 )
 
 
-# WEAVIATE_URL = os.environ["WEAVIATE_URL"]
-# WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
-
-
 class ChatRequest(BaseModel):
     question: str
     chat_history: Optional[List[Dict[str, str]]]
 
 
 def get_retriever() -> BaseRetriever:
-    # weaviate_client = weaviate.Client(
-    #     url=WEAVIATE_URL,
-    #     auth_client_secret=weaviate.AuthApiKey(api_key=WEAVIATE_API_KEY),
-    # )
-    # weaviate_client = Weaviate(
-    #     client=weaviate_client,
-    #     index_name=WEAVIATE_DOCS_INDEX_NAME,
-    #     text_key="text",
-    #     embedding=get_embeddings_model(),
-    #     by_text=False,
-    #     attributes=["source", "title"],
-    # )
-    # return weaviate_client.as_retriever(search_kwargs=dict(k=6))
-    client = qdrant_client.QdrantClient(
-        path="./local_qdrant"
-    )
-    doc_store = Qdrant(
-        client=client,
-        collection_name="my_documents", 
-        embeddings=embeddings,
-    )
-    return doc_store.as_retriever(search_type="mmr")
+    db = FAISS.load_local("faiss_index", get_embeddings_model())
+    return db.as_retriever()
 
 
 def create_retriever_chain(

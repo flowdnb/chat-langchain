@@ -6,27 +6,22 @@ authors = ["SN <6432132+samnoyes@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.12"
 langchain = "^0.1.5"
 langchain-community = "^0.0.19"
-langchain-openai = "^0.0.3"
-langchain-google-genai = "^0.0.6"
 langserve = {extras = ["server"], version = "^0.0.39"}
 fastapi = "^0.103.1"
 uvicorn = "^0.23.2"
 beautifulsoup4 = "^4.12.2"
-weaviate-client = "^3.23.2"
-psycopg2 = "^2.9.7"
 lxml = "^4.9.3"
-voyageai = "^0.1.4"
 anthropic = "^0.10.0"
 pillow = "^10.2.0"
 tiktoken = "^0.5.2"
-fireworks-ai = "^0.11.2"
 faiss-cpu = {version = "^1.7.4", platform = "darwin"}
 faiss-gpu = {version = "^1.7.2", platform = "linux"}
 pydantic = "^2.6.1"
-qdrant-client = "^1.7.3"
+fastembed = "^0.2.2"
+fake-useragent = "^1.4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
