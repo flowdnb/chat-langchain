@@ -34,7 +34,7 @@ def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
     }
 
 
-def load_sitemap_docs():
+def load_docs():
     return SitemapLoader(
         "https://intranet.dkfz.de/en/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
         filter_urls=["https://intranet.dkfz.de/"],
@@ -46,16 +46,18 @@ def load_sitemap_docs():
             ),
         },
         meta_function=metadata_extractor,
-    ).load()
-
-
-def simple_extractor(html: str) -> str:
-    soup = BeautifulSoup(html, "lxml")
-    return re.sub(r"\n\n+", "\n\n", soup.text).strip()
-
-
-def load_recursiveurl_docs():
-    return RecursiveUrlLoader(
+    ).load() + SitemapLoader(
+        "https://www.dkfz.de/de/sitemap.xml",
+        filter_urls=["https://www.dkfz.de/en/"],
+        parsing_function=langchain_docs_extractor,
+        default_parser="lxml",
+        bs_kwargs={
+            "parse_only": SoupStrainer(
+                name=("article", "title", "html", "lang", "content")
+            ),
+        },
+        meta_function=metadata_extractor,
+    ).load() + RecursiveUrlLoader(
         url="https://webcms47.inet.dkfz-heidelberg.de/",
         max_depth=7,
         extractor=simple_extractor,
@@ -65,11 +67,16 @@ def load_recursiveurl_docs():
         # Drop trailing / to avoid duplicate pages.
         link_regex=(
             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
-            # r"(?:[\#'\"]|\/[\#'\"])"
             r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions\/|\/attachments\/|\/users\/|\/uploads\/|\/dist\/|\/references|\+496221422376|\+496221422323)"
         ),
         check_response_status=True,
     ).load()
+    
+
+
+def simple_extractor(html: str) -> str:
+    soup = BeautifulSoup(html, "lxml")
+    return re.sub(r"\n\n+", "\n\n", soup.text).strip()
 
 
 def ingest_docs():
@@ -77,20 +84,10 @@ def ingest_docs():
     
     embeddings = get_embeddings_model()
 
-    docs_from_sitemap = load_sitemap_docs()
-    logger.info(f"Loaded {len(docs_from_sitemap)} docs from sitemap")
-    docs_from_recursiveurl = load_recursiveurl_docs()
-    logger.info(f"Loaded {len(docs_from_recursiveurl)} docs from recursiveurl")
-    # docs_from_langsmith = load_langsmith_docs()
-    # logger.info(f"Loaded {len(docs_from_langsmith)} docs from Langsmith")
+    docs = load_docs()
+    logger.info(f"Loaded {len(docs)} docs")
 
-    docs_transformed = text_splitter.split_documents(
-        docs_from_sitemap
-        +
-        docs_from_recursiveurl
-        # +
-        # docs_from_langsmith
-    )
+    docs_transformed = text_splitter.split_documents(docs)
     docs_transformed = [doc for doc in docs_transformed if len(doc.page_content) > 10]
 
     # We try to return 'source' and 'title' metadata when querying vector store and
