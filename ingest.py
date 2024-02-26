@@ -38,6 +38,7 @@ def load_docs():
     return SitemapLoader(
         "https://intranet.dkfz.de/en/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
         filter_urls=["https://intranet.dkfz.de/"],
+        continue_on_failure=False,
         parsing_function=langchain_docs_extractor,
         default_parser="lxml",
         bs_kwargs={
@@ -49,6 +50,7 @@ def load_docs():
     ).load() + SitemapLoader(
         "https://www.dkfz.de/de/sitemap.xml",
         filter_urls=["https://www.dkfz.de/en/"],
+        continue_on_failure=True,
         parsing_function=langchain_docs_extractor,
         default_parser="lxml",
         bs_kwargs={
@@ -86,12 +88,18 @@ def ingest_docs():
 
     docs = load_docs()
     logger.info(f"Loaded {len(docs)} docs")
+    with open('./docs.txt', 'w') as f:
+        f.write(' '.join(map(str, docs)))
 
-    docs_transformed = text_splitter.split_documents(docs)
-    docs_transformed = [doc for doc in docs_transformed if len(doc.page_content) > 10]
+    docs_splitted = text_splitter.split_documents(docs)
+    logger.info(f"docs_splitted")
+    with open('./docs_splitted.txt', 'w') as f:
+        f.write(' '.join(map(str, docs_splitted)))
+
+    docs_transformed = [doc for doc in docs_splitted if len(doc.page_content) > 10]
 
     # We try to return 'source' and 'title' metadata when querying vector store and
-    # Weaviate will error at query time if one of the attributes is missing from a
+    # it will error at query time if one of the attributes is missing from a
     # retrieved document.
     for doc in docs_transformed:
         if "source" not in doc.metadata:
@@ -99,7 +107,9 @@ def ingest_docs():
         if "title" not in doc.metadata:
             doc.metadata["title"] = ""
 
-    # logger.info(f"docs_transformed: {docs_transformed}")
+    logger.info(f"docs_transformed")
+    with open('./docs_transformed.txt', 'w') as f:
+        f.write(' '.join(map(str, docs_transformed)))
 
     db = FAISS.from_documents(docs_transformed, embeddings)
     db.save_local("faiss_index")
