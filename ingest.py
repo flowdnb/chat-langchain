@@ -35,7 +35,7 @@ def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
 
 
 def load_docs():
-    return SitemapLoader(
+    docs_intranet=SitemapLoader(
         "https://intranet.dkfz.de/en/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
         filter_urls=["https://intranet.dkfz.de/"],
         continue_on_failure=False,
@@ -47,7 +47,8 @@ def load_docs():
             ),
         },
         meta_function=metadata_extractor,
-    ).load() + SitemapLoader(
+    ).load()
+    docs_homepage=SitemapLoader(
         "https://www.dkfz.de/de/sitemap.xml",
         filter_urls=["https://www.dkfz.de/en/"],
         continue_on_failure=True,
@@ -59,7 +60,8 @@ def load_docs():
             ),
         },
         meta_function=metadata_extractor,
-    ).load() + RecursiveUrlLoader(
+    ).load()
+    docs_wiki=RecursiveUrlLoader(
         url="https://webcms47.inet.dkfz-heidelberg.de/",
         max_depth=7,
         extractor=simple_extractor,
@@ -73,7 +75,8 @@ def load_docs():
         ),
         check_response_status=True,
     ).load()
-    
+    docs = docs_intranet + docs_homepage + docs_wiki
+    return docs
 
 
 def simple_extractor(html: str) -> str:
@@ -89,12 +92,12 @@ def ingest_docs():
     docs = load_docs()
     logger.info(f"Loaded {len(docs)} docs")
     with open('./docs.txt', 'w') as f:
-        f.write(' '.join(map(str, docs)))
+        f.write('\n'.join(map(str, docs)))
 
     docs_splitted = text_splitter.split_documents(docs)
     logger.info(f"docs_splitted")
     with open('./docs_splitted.txt', 'w') as f:
-        f.write(' '.join(map(str, docs_splitted)))
+        f.write('\n'.join(map(str, docs_splitted)))
 
     docs_transformed = [doc for doc in docs_splitted if len(doc.page_content) > 10]
 
@@ -109,7 +112,7 @@ def ingest_docs():
 
     logger.info(f"docs_transformed")
     with open('./docs_transformed.txt', 'w') as f:
-        f.write(' '.join(map(str, docs_transformed)))
+        f.write('\n'.join(map(str, docs_transformed)))
 
     db = FAISS.from_documents(docs_transformed, embeddings)
     db.save_local("faiss_index")
