@@ -48,30 +48,30 @@ def load_docs():
         },
         meta_function=metadata_extractor,
     ).load()
-    docs_homepage=SitemapLoader(
-        "https://www.dkfz.de/de/sitemap.xml",
-        filter_urls=["https://www.dkfz.de/en/"],
-        continue_on_failure=True,
-        parsing_function=langchain_docs_extractor,
-        default_parser="lxml",
-        bs_kwargs={
-            "parse_only": SoupStrainer(
-                name=("article", "title", "html", "lang", "content")
-            ),
-        },
-        meta_function=metadata_extractor,
-    ).load()
+    # docs_homepage=SitemapLoader(
+    #     "https://www.dkfz.de/de/sitemap.xml",
+    #     filter_urls=["https://www.dkfz.de/en/"],
+    #     continue_on_failure=True,
+    #     parsing_function=langchain_docs_extractor,
+    #     default_parser="lxml",
+    #     bs_kwargs={
+    #         "parse_only": SoupStrainer(
+    #             name=("article", "title", "html", "lang", "content")
+    #         ),
+    #     },
+    #     meta_function=metadata_extractor,
+    # ).load()
     docs_wiki=RecursiveUrlLoader(
         url="https://webcms47.inet.dkfz-heidelberg.de/",
         max_depth=7,
         extractor=simple_extractor,
         prevent_outside=True,
-        use_async=True,
+        use_async=False,
         timeout=600,
         # Drop trailing / to avoid duplicate pages.
         link_regex=(
             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
-            r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions\/|\/attachments\/|\/users\/|\/uploads\/|\/dist\/|\/references|\+496221422376|\+496221422323)"
+            r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions|\/revisions\/|\/attachments\/|\/user\/|\/search\?.*|\/uploads\/|\/dist\/|\/references|\+496221422376|\+496221422323)"
         ),
         check_response_status=True,
     ).load()
