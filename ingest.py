@@ -62,7 +62,7 @@ def load_docs():
         meta_function=metadata_extractor,
     ).load()
     docs_wiki=RecursiveUrlLoader(
-        url="https://webcms47.inet.dkfz-heidelberg.de/",
+        url="https://webcms47.dkfz-heidelberg.de/",
         max_depth=7,
         extractor=simple_extractor,
         prevent_outside=True,
