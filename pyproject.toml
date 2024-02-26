@@ -6,7 +6,7 @@ authors = ["SN <6432132+samnoyes@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.9,<3.12"
 langchain = "^0.1.5"
 langchain-community = "^0.0.19"
 langserve = {extras = ["server"], version = "^0.0.39"}
