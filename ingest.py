@@ -48,19 +48,6 @@ def load_docs():
         },
         meta_function=metadata_extractor,
     ).load()
-    docs_homepage=SitemapLoader(
-        "https://www.dkfz.de/de/sitemap.xml",
-        filter_urls=["https://www.dkfz.de/en/"],
-        continue_on_failure=True,
-        parsing_function=langchain_docs_extractor,
-        default_parser="lxml",
-        bs_kwargs={
-            "parse_only": SoupStrainer(
-                name=("article", "title", "html", "lang", "content")
-            ),
-        },
-        meta_function=metadata_extractor,
-    ).load()
     docs_wiki=RecursiveUrlLoader(
         url="https://webcms47.dkfz-heidelberg.de/",
         max_depth=7,
@@ -74,7 +61,20 @@ def load_docs():
         ),
         check_response_status=True,
     ).load()
-    docs = docs_intranet + docs_homepage + docs_wiki
+    docs_homepage=SitemapLoader(
+        "https://www.dkfz.de/de/sitemap.xml",
+        filter_urls=["https://www.dkfz.de/en/"],
+        continue_on_failure=True,
+        parsing_function=langchain_docs_extractor,
+        default_parser="lxml",
+        bs_kwargs={
+            "parse_only": SoupStrainer(
+                name=("article", "title", "html", "lang", "content")
+            ),
+        },
+        meta_function=metadata_extractor,
+    ).load()
+    docs = docs_intranet + docs_wiki + docs_homepage
     return docs
 
 
