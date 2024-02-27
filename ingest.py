@@ -44,7 +44,7 @@ def load_docs():
         timeout=600,
         link_regex=(
             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)" # Drop trailing / to avoid duplicate pages.
-            r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions|\/revisions\/|\/attachments\/|\/user\/|\/search\?.*|\/uploads\/|\/dist\/|\/references|\+496221422376|\+496221422323)"
+            r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions|\/revisions\/|\/attachments\/|\/user\/|\/search\?.*|\/uploads\/|\/dist\/|\/references|\/recently-updated|\+496221422376|\+496221422323)"
         ),
         check_response_status=True,
     ).load()
