@@ -35,19 +35,6 @@ def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
 
 
 def load_docs():
-    docs_intranet=SitemapLoader(
-        "https://intranet.dkfz.de/en/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
-        filter_urls=["https://intranet.dkfz.de/"],
-        continue_on_failure=False,
-        parsing_function=langchain_docs_extractor,
-        default_parser="lxml",
-        bs_kwargs={
-            "parse_only": SoupStrainer(
-                name=("article", "title", "html", "lang", "content")
-            ),
-        },
-        meta_function=metadata_extractor,
-    ).load()
     docs_wiki=RecursiveUrlLoader(
         url="https://webcms47.inet.dkfz-heidelberg.de/",
         max_depth=7,
@@ -60,6 +47,19 @@ def load_docs():
             r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions|\/revisions\/|\/attachments\/|\/user\/|\/search\?.*|\/uploads\/|\/dist\/|\/references|\+496221422376|\+496221422323)"
         ),
         check_response_status=True,
+    ).load()
+    docs_intranet=SitemapLoader(
+        "https://intranet.dkfz.de/en/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
+        filter_urls=["https://intranet.dkfz.de/"],
+        continue_on_failure=False,
+        parsing_function=langchain_docs_extractor,
+        default_parser="lxml",
+        bs_kwargs={
+            "parse_only": SoupStrainer(
+                name=("article", "title", "html", "lang", "content")
+            ),
+        },
+        meta_function=metadata_extractor,
     ).load()
     docs_homepage=SitemapLoader(
         "https://www.dkfz.de/de/sitemap.xml",
@@ -74,7 +74,7 @@ def load_docs():
         },
         meta_function=metadata_extractor,
     ).load()
-    docs = docs_intranet + docs_wiki + docs_homepage
+    docs = docs_wiki + docs_intranet + docs_homepage
     return docs
 
 
