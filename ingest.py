@@ -53,7 +53,7 @@ def load_docs():
         max_depth=7,
         extractor=simple_extractor,
         prevent_outside=True,
-        use_async=True,
+        use_async=False,
         timeout=600,
         link_regex=(
             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)" # Drop trailing / to avoid duplicate pages.
