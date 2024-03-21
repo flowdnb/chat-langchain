@@ -158,3 +158,5 @@ faiss_index/
 faiss_index.tgz
 
 docs*.txt
+
+pdf/*.pdf

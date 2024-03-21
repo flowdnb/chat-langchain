@@ -31,7 +31,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              What is the IT Core Facility (ITCF) at DKFZ??
+              What is NetOps?
             </Heading>
           </CardHeader>
         </Card>
@@ -52,7 +52,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              Please explain the Rahmendatenschutzkonzept of ITCF at DKFZ.
+              Please explain Zero Touch Provisioning.
             </Heading>
           </CardHeader>
         </Card>
@@ -74,7 +74,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              How to get network access at DKFZ?
+              What is Configuration Validation Testing?
             </Heading>
           </CardHeader>
         </Card>
@@ -95,7 +95,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               color={"gray.200"}
               textAlign={"center"}
             >
-              Tell me some facts about the “Click&Dial” service provided by ITCF at DKFZ?
+              Please tell me about NetBox.
             </Heading>
           </CardHeader>
         </Card>

@@ -220,7 +220,7 @@ export function ChatWindow(props: { conversationId: string }) {
           mb={1}
           color={"white"}
         >
-          🧑🏼‍💻🔧 AITServiceBot 🤖📚
+          🤖📚 AIpdfReaderChat
         </Heading>
         {messages.length > 0 ? (
           <Heading fontSize="md" fontWeight={"normal"} mb={1} color={"white"}>
@@ -234,11 +234,7 @@ export function ChatWindow(props: { conversationId: string }) {
             marginTop={"10px"}
             textAlign={"center"}
           >
-            Ask me anything from the {" "}
-            <Link href="https://bookstack.dkfz.de/" color={"blue.200"}>
-            ITCFWiki
-            </Link>
-            !
+            Ask me anything from the PDF files!
           </Heading>
         )}
         <div className="text-white flex flex-wrap items-center mt-4">
@@ -290,7 +286,7 @@ export function ChatWindow(props: { conversationId: string }) {
           value={input}
           maxRows={5}
           marginRight={"56px"}
-          placeholder="Ask something from the ITCFWiki"
+          placeholder="Ask something from the PDF files"
           textColor={"white"}
           borderColor={"rgb(58, 58, 61)"}
           onChange={(e) => setInput(e.target.value)}
@@ -322,7 +318,7 @@ export function ChatWindow(props: { conversationId: string }) {
       {messages.length === 0 ? (
         <footer className="flex justify-center absolute bottom-8">
           <a
-            href="https://github.com/flowdnb/chat-langchain/tree/aitservicebot"
+            href="https://github.com/flowdnb/chat-langchain/tree/aipdfreaderchat"
             target="_blank"
             className="text-white flex items-center"
           >

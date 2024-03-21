@@ -4,8 +4,7 @@ import os
 import re
 from parser import langchain_docs_extractor
 
-from bs4 import BeautifulSoup, SoupStrainer
-from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader
+from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 from langchain_community.vectorstores import FAISS
@@ -18,69 +17,16 @@ logger = logging.getLogger(__name__)
 
 def get_embeddings_model() -> Embeddings:
     # Initialize the DefaultEmbedding class with the desired parameters
-    return FastEmbedEmbeddings(model_name="BAAI/bge-small-en", max_length=512)
-
-
-def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
-    title = soup.find("title")
-    description = soup.find("meta", attrs={"name": "description"})
-    html = soup.find("html")
-    return {
-        "source": meta["loc"],
-        "title": title.get_text() if title else "",
-        "description": description.get("content", "") if description else "",
-        "language": html.get("lang", "") if html else "",
-        **meta,
-    }
+    # https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.fastembed.FastEmbedEmbeddings.html
+    # https://qdrant.github.io/fastembed/examples/Supported_Models/
+    return FastEmbedEmbeddings(model_name="BAAI/bge-base-en-v1.5", max_length=512)
 
 
 def load_docs():
-    docs_wiki=RecursiveUrlLoader(
-        url="https://webcms47.inet.dkfz-heidelberg.de/",
-        max_depth=7,
-        extractor=simple_extractor,
-        prevent_outside=True,
-        use_async=False,
-        timeout=600,
-        link_regex=(
-            f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)" # Drop trailing / to avoid duplicate pages.
-            r"(?:[\#'\"]|\/[\#'\"]|\/export\/|\/revisions|\/revisions\/|\/attachments\/|\/user\/|\/search\?.*|\/uploads\/|\/dist\/|\/references|\/recently-updated|\+496221422376|\+496221422323)"
-        ),
-        check_response_status=True,
-    ).load()
-    docs_intranet=SitemapLoader(
-        "https://intranet.dkfz.de/en/sitemap.xml?sitemap=pages&cHash=7e244f5c28a54d2a65d08c0842148c7d",
-        filter_urls=["https://intranet.dkfz.de/"],
-        continue_on_failure=False,
-        parsing_function=langchain_docs_extractor,
-        default_parser="lxml",
-        bs_kwargs={
-            "parse_only": SoupStrainer(
-                name=("article", "title", "html", "lang", "content")
-            ),
-        },
-        meta_function=metadata_extractor,
-    ).load()
-    docs_homepage=SitemapLoader(
-        "https://www.dkfz.de/de/sitemap.xml",
-        filter_urls=["https://www.dkfz.de/en/"],
-        continue_on_failure=True,
-        parsing_function=langchain_docs_extractor,
-        default_parser="lxml",
-        bs_kwargs={
-            "parse_only": SoupStrainer(
-                name=("article", "title", "html", "lang", "content")
-            ),
-        },
-        meta_function=metadata_extractor,
-    ).load()
-    docs = docs_wiki + docs_intranet + docs_homepage
+    # https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf
+    loader = PyPDFDirectoryLoader("./pdf/")
+    docs = loader.load()
     return docs
-
-
-def simple_extractor(html: str) -> str:
-    soup = BeautifulSoup(html, "lxml")
-    return re.sub(r"\n\n+", "\n\n", soup.text).strip()
 
 
 def ingest_docs():
